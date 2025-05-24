@@ -35,6 +35,9 @@ const router = createBrowserRouter([
     ]
   },
   {
+    
+  },
+  {
     path: '/admin',
     element: <ProtectRouteAdmin element={<LayOutAdmin />} /> ,
     children: [

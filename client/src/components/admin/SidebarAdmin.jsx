@@ -1,8 +1,18 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { CircleGauge, LayoutDashboard } from 'lucide-react';
 
 const SidebarAdmin = () => {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        // ลบ token หรือข้อมูล session ออกจาก localStorage
+        // localStorage.removeItem('token');
+        localStorage.removeItem('ecom-store');
+        // redirect ไปหน้า login
+        navigate('/login');
+    };
+
     return (
         <div className='bg-gray-700 w-64 text-gray-100 flex flex-col h-screen '>
             <div className='h-24 bg-gray-900 flex items-center justify-center text-2xl font-bold'>
@@ -28,7 +38,6 @@ const SidebarAdmin = () => {
                     Manage
                 </NavLink>
 
-
                 <NavLink to={'category'} className={({isActive})=>
                 isActive 
                 ? 'bg-gray-800 px-4 py-2 text-white flex items-center gap-2 rounded' 
@@ -46,19 +55,16 @@ const SidebarAdmin = () => {
                 <LayoutDashboard />
                     Product
                 </NavLink>
-
-
             </nav>
 
             <div>
-            <NavLink className={({isActive})=>
-                isActive 
-                ? 'bg-gray-800 px-4 py-2 text-white flex items-center gap-2 rounded' 
-                : 'text-gray-300 px-4 py-2 hover:bg-gray-600 flex gap-2 rounded hover:text-white'
-                }>
-                <LayoutDashboard />
+                <button
+                    onClick={handleLogout}
+                    className='text-gray-300 px-4 py-2 hover:bg-gray-600 flex gap-2 rounded hover:text-white w-full text-left'
+                >
+                    <LayoutDashboard />
                     Logout
-                </NavLink>
+                </button>
             </div>
         </div>
     )

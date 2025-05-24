@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlserver"
   url      = env("DATABASE_URL")
 }
 
@@ -24,8 +24,8 @@ model User {
   address    String?
   orders     Order[]
   carts      Cart[]
-  createedAt DateTime @default(now())
-  updateAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Product {
@@ -38,8 +38,8 @@ model Product {
   orderItems  ProductOnOrder[]
   cartItems   ProductOnCart[]
   images      Image[]
-  createedAt  DateTime         @default(now())
-  updateAt    DateTime         @updatedAt
+  createdAt  DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
   category    Category?        @relation(fields: [categoryId], references: [id])
   categoryId  Int?
 }
@@ -51,8 +51,8 @@ model Order {
   orderStatus String           @default("Not Process")
   orderedBy   User             @relation(fields: [orderedById], references: [id])
   orderedById Int
-  createedAt  DateTime         @default(now())
-  updateAt    DateTime         @updatedAt
+  createdAt  DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
 }
 
 model ProductOnOrder {
@@ -69,16 +69,16 @@ model Category {
   id         Int       @id @default(autoincrement())
   name       String
   products   Product[]
-  createedAt DateTime  @default(now())
-  updateAt   DateTime  @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Cart {
   id          Int             @id @default(autoincrement())
   products    ProductOnCart[]
   cartTotal   Float
-  createedAt  DateTime        @default(now())
-  updateAt    DateTime        @updatedAt
+  createdAt  DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
   orderedBy   User            @relation(fields: [orderedById], references: [id])
   orderedById Int
 }
@@ -99,8 +99,8 @@ model Image {
   public_id  String
   url        String
   secure_url String
-  createedAt DateTime @default(now())
-  updateAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId  Int
 }

@@ -5,7 +5,17 @@ const prisma = require("../config/prisma")
 exports.create = async (req, res) => {
     try {
         //code
+        console.log("req.body", req.body)
         const { title, description, price, quantity, categoryId, images } = req.body
+        // console.log("image",images)
+        // ตรวจสอบว่ามีข้อมูลรูปภาพหรือไม่
+                const processedImages = images.map((item) => ({
+            asset_id: item.asset_id,
+            public_id: item.public_id || item.asset_id, // ใช้ asset_id เป็น public_id ถ้าไม่มี
+            url: item.url,
+            secure_url: item.secure_url
+        }));
+        
         const product = await prisma.product.create({
             data: {
                 title: title,
@@ -14,12 +24,7 @@ exports.create = async (req, res) => {
                 quantity: parseInt(quantity),
                 categoryId: parseInt(categoryId),
                 images: {
-                    create: images.map((item) => ({
-                        asset_id: item.asset_id,
-                        public_id: item.public_id,
-                        url: item.url,
-                        secure_url: item.secure_url
-                    }))
+                    create: processedImages
                 }
             }
         })
@@ -32,27 +37,74 @@ exports.create = async (req, res) => {
 }
 exports.list = async (req, res) => {
     try {
-        //code
-        const { count } = req.params
-        const product = await prisma.product.findMany({
-            take: parseInt(count),
-            orderBy: { createedAt: "desc" },
+        // Get query parameters with defaults
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 10;
+        const title = req.query.title || '';
+        const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : undefined;
+        const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : undefined;
+        
+        // Calculate skip value for pagination
+        const skip = (page - 1) * pageSize;
+        
+        // Build where clause
+        const where = {};
+        
+        // Add title filter if provided
+        if (title) {
+            where.title = {
+                contains: title
+            };
+        }
+        
+        // Add price range filter if provided
+        if (minPrice !== undefined || maxPrice !== undefined) {
+            where.price = {};
+            
+            if (minPrice !== undefined) {
+                where.price.gte = minPrice;
+            }
+            
+            if (maxPrice !== undefined) {
+                where.price.lte = maxPrice;
+            }
+        }
+        
+        // Get total count for pagination
+        const totalCount = await prisma.product.count({ where });
+        
+        // Get products with filters and pagination
+        const products = await prisma.product.findMany({
+            where,
+            skip,
+            take: pageSize,
+            orderBy: { createdAt: "desc" }, // Fixed typo in createdAt
             include: {
                 category: true,
                 images: true
             }
-        })
-        res.send(product)
+        });
+        
+        // Return products with pagination metadata
+        res.json({
+            data: products,
+            meta: {
+                page,
+                pageSize,
+                totalCount,
+                totalPages: Math.ceil(totalCount / pageSize)
+            }
+        });
     } catch (err) {
-        //err
-        console.log(err)
-        res.status(500).json({ message: "Server error" })
+        console.log(err);
+        res.status(500).json({ message: "Server error" });
     }
 }
 exports.read = async (req, res) => {
     try {
         //code
         const { id } = req.params
+        console.log("id", id)
         const product = await prisma.product.findFirst({
             where: {
                 id: Number(id)

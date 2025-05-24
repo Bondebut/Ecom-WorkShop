@@ -14,7 +14,7 @@ const FromCategory = () => {
         getCategory(token)
     }, [])
 
-    const getCategory = async (token) => {
+    const getCategory = async( token) => {
 
         try {
             const res = await listCategory(token)

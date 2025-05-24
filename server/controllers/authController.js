@@ -7,13 +7,13 @@ exports.register = async (req, res) => {
     try {
         //code
         const { email, password } = req.body
-
+        const emailNew = email.toLowerCase().trim()
         //Validate body
-        if (!email || !password) {
+        if (!emailNew || !password) {
             //
             return res.status(400).json({ message: "Email or Password is require!!" })
         }
-        if (!/\S+@\S+\.\S+/.test(email)) {
+        if (!/\S+@\S+\.\S+/.test(emailNew)) {
             return res.status(400).json({ message: "Invalid email format!" });
         }
 
@@ -24,7 +24,7 @@ exports.register = async (req, res) => {
         //check Email in db
         const user = await prisma.user.findFirst({
             where: {
-                email: email
+                email: emailNew
             }
         })
         if (user) {
@@ -37,7 +37,7 @@ exports.register = async (req, res) => {
         //Register
         await prisma.user.create({
             data: {
-                email: email,
+                email: emailNew,
                 password: hashPassword
             }
         })
@@ -55,8 +55,8 @@ exports.login = async (req, res) => {
     try {
         //code
         const { email, password } = req.body
-
-        if (!/\S+@\S+\.\S+/.test(email)) {
+        const emailNew = email.toLowerCase().trim()
+        if (!/\S+@\S+\.\S+/.test(emailNew)) {
             return res.status(400).json({ message: "Invalid email format!" });
         }
 
@@ -67,7 +67,7 @@ exports.login = async (req, res) => {
         //check Email
         const user = await prisma.user.findFirst({
             where: {
-                email: email
+                email: emailNew
             }
         })
 
