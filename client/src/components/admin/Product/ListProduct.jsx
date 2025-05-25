@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { listProduct, removeProduct } from "../../../api/Product";
 import { Link } from "react-router-dom";
+import useEcomStore from "../../../store/ecom-store";
+
 
 const ListProduct = () => {
   // State
@@ -15,7 +17,7 @@ const ListProduct = () => {
     title: '',
     priceRange: [null, null] 
   });
-
+  const token = useEcomStore((state) => state.token);
   // Load products
   const loadProducts = async (page = 1, filters = {}) => {
     setLoading(true);
@@ -83,7 +85,6 @@ const ListProduct = () => {
     setLoading(true);
     try {
       // ใช้ localStorage แทน redux
-      const token = JSON.parse(localStorage.getItem('auth'))?.token;
       await removeProduct(token, id);
       alert("ลบสินค้าสำเร็จ");
       loadProducts(pagination.current, filters);

@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import useEcomStore from '../../store/ecom-store';
 import { useNavigate } from 'react-router-dom';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const navigate = useNavigate()

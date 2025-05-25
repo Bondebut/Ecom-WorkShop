@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import { toast } from 'react-toastify';
 import axios from 'axios'
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import 'react-toastify/dist/ReactToastify.css';
+import { registerUser } from '../../api/auth';
+
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -28,7 +31,7 @@ const Register = () => {
     }
     setLoading(true)
     try{
-      const res = await axios.post('http://localhost:5000/api/register',form)
+      const res = await registerUser(form)
       toast.success('Welcome')
       // redirect or clear form if needed
     }catch(err){

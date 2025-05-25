@@ -1,10 +1,11 @@
 import axios from "axios";
 import { create } from "zustand";
 import { persist,createJSONStorage } from 'zustand/middleware';
+import { loginUser } from "../api/auth";
 
 const ecomStore = (set) => ({
     user: null, token: null, actionLogin: async (form) => {
-        const res = await axios.post('http://localhost:5000/api/login', form)
+        const res = await loginUser(form)
         //zustand
         set({
             user:res.data.payload,
