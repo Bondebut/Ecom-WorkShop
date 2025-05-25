@@ -9,8 +9,8 @@ const Product = () => {
   const closeDialog = () => setIsDialogOpen(false)
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 h-full p-6">
-      <h1 className="text-3xl font-bold text-center mb-8">Product Master</h1>
+    <div className="container mx-auto p-6 bg-white rounded-lg shadow-lg max-w-4xl">
+      <h1 className="text-3xl font-bold text-center mb-6 border-b pb-3">Product Master</h1>
        <div className="flex justify-end mb-8">
         <button 
           onClick={openDialog}
