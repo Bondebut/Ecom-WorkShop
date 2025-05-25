@@ -20,7 +20,9 @@ exports.create = async (req, res) => {
 exports.list = async (req, res) => {
     try {
         //code 
-        const category = await prisma.category.findMany()
+        const category = await prisma.category.findMany({
+            orderBy: { id: "desc" },
+        })
         res.send(category)
     } catch (err) {
         //err

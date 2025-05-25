@@ -1,7 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef,useEffect  } from "react";
 import { createProduct } from "../../../api/Product";
 import { uploadImage } from "../../../api/uploadImage";
 import useEcomStore from "../../../store/ecom-store";
+import useDataStore from "../../../store/data-store";
 import "./Product.css";
 
 const AddProduct = () => {
@@ -10,16 +11,23 @@ const AddProduct = () => {
     description: "",
     price: "",
     quantity: "",
-    categoryId: 3,
+    categoryId: 6,
   });
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviewUrls, setImagePreviewUrls] = useState([]);
   const [loading, setLoading] = useState(false);
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const token = useEcomStore((state) => state.token);
+  const { categories, getCategories } = useDataStore();
 
   const fileInputRef = useRef(null);
 
+  useEffect(() => {
+      getCategories(token);
+       console.log("Categories:", categories);
+    }, []);
+
+   
   const handleChange = (e) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
   };
@@ -30,44 +38,46 @@ const AddProduct = () => {
 
   // สร้าง URL สำหรับแสดงตัวอย่างภาพ
   const addNewFiles = (files) => {
-  if (!files || files.length === 0) {
-    return;
-  }
+    if (!files || files.length === 0) {
+      return;
+    }
 
-  const newImageFiles = [...imageFiles];
-  const newImagePreviewUrls = [...imagePreviewUrls];
-  
-  // จำนวนรูปที่สามารถเพิ่มได้อีก
-  const remainingSlots = 5 - newImageFiles.length;
-  
-  if (remainingSlots <= 0) {
-    alert("คุณมีรูปภาพครบ 5 รูปแล้ว ไม่สามารถเพิ่มได้อีก");
-    return;
-  }
-  
-  // ถ้ามีรูปใหม่มากกว่าที่เหลืออยู่
-  if (files.length > remainingSlots) {
-    alert(`สามารถเพิ่มได้อีกเพียง ${remainingSlots} รูปเท่านั้น จะเพิ่มเฉพาะ ${remainingSlots} รูปแรก`);
-  }
-  
-  // เพิ่มเฉพาะรูปที่ไม่เกินจำนวนที่เหลืออยู่
-  let addedCount = 0;
-  
-  Array.from(files).forEach((file) => {
-    if (addedCount >= remainingSlots) {
-      return; // ข้ามรูปที่เกินมา
+    const newImageFiles = [...imageFiles];
+    const newImagePreviewUrls = [...imagePreviewUrls];
+
+    // จำนวนรูปที่สามารถเพิ่มได้อีก
+    const remainingSlots = 5 - newImageFiles.length;
+
+    if (remainingSlots <= 0) {
+      alert("คุณมีรูปภาพครบ 5 รูปแล้ว ไม่สามารถเพิ่มได้อีก");
+      return;
     }
-    
-    if (file.type.match("image.*")) {
-      newImageFiles.push(file);
-      newImagePreviewUrls.push(URL.createObjectURL(file));
-      addedCount++;
+
+    // ถ้ามีรูปใหม่มากกว่าที่เหลืออยู่
+    if (files.length > remainingSlots) {
+      alert(
+        `สามารถเพิ่มได้อีกเพียง ${remainingSlots} รูปเท่านั้น จะเพิ่มเฉพาะ ${remainingSlots} รูปแรก`
+      );
     }
-  });
-  
-  setImageFiles(newImageFiles);
-  setImagePreviewUrls(newImagePreviewUrls);
-};
+
+    // เพิ่มเฉพาะรูปที่ไม่เกินจำนวนที่เหลืออยู่
+    let addedCount = 0;
+
+    Array.from(files).forEach((file) => {
+      if (addedCount >= remainingSlots) {
+        return; // ข้ามรูปที่เกินมา
+      }
+
+      if (file.type.match("image.*")) {
+        newImageFiles.push(file);
+        newImagePreviewUrls.push(URL.createObjectURL(file));
+        addedCount++;
+      }
+    });
+
+    setImageFiles(newImageFiles);
+    setImagePreviewUrls(newImagePreviewUrls);
+  };
 
   // เมื่อลากไฟล์มาเหนือพื้นที่อัปโหลด
   const handleDragOver = (e) => {
@@ -187,7 +197,7 @@ const AddProduct = () => {
         description: "",
         price: "",
         quantity: "",
-        categoryId: 3,
+        categoryId: 6,
       });
 
       imagePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
@@ -275,10 +285,12 @@ const AddProduct = () => {
               onChange={handleChange}
               required
             >
-              <option value="">เลือกหมวดหมู่</option>
-              <option value="1">เครื่องใช้ไฟฟ้า</option>
-              <option value="2">เครื่องสำอาง</option>
-              <option value="3">เสื้อผ้า</option>
+              <option disabled value="">เลือกหมวดหมู่</option>
+              {categories && categories.map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
