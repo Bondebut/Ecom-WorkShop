@@ -1,8 +1,11 @@
 import React from 'react'
+import Manages from '../../components/admin/Manage/index'
 
 const Manage = () => {
   return (
-    <div>Manage</div>
+    <div>
+      <Manages />
+    </div>
   )
 }
 
