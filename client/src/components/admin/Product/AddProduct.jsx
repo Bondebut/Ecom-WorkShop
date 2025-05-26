@@ -3,6 +3,7 @@ import { createProduct } from "../../../api/Product";
 import { uploadImage } from "../../../api/uploadImage";
 import useEcomStore from "../../../store/ecom-store";
 import useDataStore from "../../../store/data-store";
+import Swal from "sweetalert2";
 import "./Product.css";
 
 const AddProduct = () => {
@@ -24,7 +25,7 @@ const AddProduct = () => {
 
   useEffect(() => {
       getCategories(token);
-       console.log("Categories:", categories);
+      //  console.log("Categories:", categories);
     }, []);
 
    
@@ -49,15 +50,26 @@ const AddProduct = () => {
     const remainingSlots = 5 - newImageFiles.length;
 
     if (remainingSlots <= 0) {
-      alert("คุณมีรูปภาพครบ 5 รูปแล้ว ไม่สามารถเพิ่มได้อีก");
+      Swal.fire({
+        title: 'ข้อจำกัดจำนวนรูปภาพ',
+        text: 'คุณมีรูปภาพครบ 5 รูปแล้ว ไม่สามารถเพิ่มได้อีก',
+        icon: 'warning',
+        timer: 2000,
+        showConfirmButton: false,
+      });
       return;
     }
 
     // ถ้ามีรูปใหม่มากกว่าที่เหลืออยู่
     if (files.length > remainingSlots) {
-      alert(
-        `สามารถเพิ่มได้อีกเพียง ${remainingSlots} รูปเท่านั้น จะเพิ่มเฉพาะ ${remainingSlots} รูปแรก`
-      );
+      Swal.fire({
+        title: 'ข้อจำกัดจำนวนรูปภาพ',
+        text: `คุณสามารถเพิ่มได้สูงสุด ${remainingSlots} รูปเท่านั้น`,
+        icon: 'warning',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      return;
     }
 
     // เพิ่มเฉพาะรูปที่ไม่เกินจำนวนที่เหลืออยู่
@@ -159,7 +171,13 @@ const AddProduct = () => {
     e.preventDefault();
 
     if (imageFiles.length === 0) {
-      alert("กรุณาเพิ่มรูปภาพสินค้าอย่างน้อย 1 รูป");
+      Swal.fire({
+        title: 'ไม่มีรูปภาพ',
+        text: 'กรุณาเพิ่มรูปภาพอย่างน้อย 1 รูปก่อนบันทึกสินค้า',
+        icon: 'warning',
+        timer: 2000,
+        showConfirmButton: false,
+      });
       return;
     }
 
@@ -189,7 +207,13 @@ const AddProduct = () => {
       const response = await createProduct(token, productData);
 
       console.log("Product saved successfully:", response.data);
-      alert("บันทึกสินค้าสำเร็จ");
+      Swal.fire({
+        title: "สำเร็จ",
+        text: `เพิ่มสินค้า ${response.data.title} เรียบร้อยแล้ว`,
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
 
       // รีเซ็ตฟอร์ม
       setProduct({
@@ -205,7 +229,12 @@ const AddProduct = () => {
       setImagePreviewUrls([]);
     } catch (error) {
       console.error("Error saving product:", error);
-      alert("เกิดข้อผิดพลาดในการบันทึกสินค้า");
+      Swal.fire({
+        title: "เกิดข้อผิดพลาด",
+        text: error.response?.data?.message || "ไม่สามารถเพิ่มสินค้าได้",
+        icon: "error",
+        confirmButtonColor: "#3085d6",
+      });
     } finally {
       setLoading(false);
     }

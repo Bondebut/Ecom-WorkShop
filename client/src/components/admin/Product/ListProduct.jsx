@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { listProduct, removeProduct } from "../../../api/Product";
 import { Link } from "react-router-dom";
 import useEcomStore from "../../../store/ecom-store";
-
+import Swal from "sweetalert2";
 
 const ListProduct = () => {
   // State
@@ -49,7 +49,13 @@ const ListProduct = () => {
       });
     } catch (error) {
       console.error("Failed to load products:", error);
-      alert("ไม่สามารถโหลดรายการสินค้าได้");
+      Swal.fire({
+        title: "เกิดข้อผิดพลาด",
+        text: error.response?.data?.message || "ไม่สามารถโหลดข้อมูลสินค้าได้",
+        icon: "error",
+        confirmButtonColor: "#3085d6"
+      });
+
     } finally {
       setLoading(false);
     }
@@ -80,17 +86,38 @@ const ListProduct = () => {
 
   // Handle delete
   const handleRemove = async (id) => {
-    if (!confirm("คุณต้องการลบสินค้านี้ใช่หรือไม่?")) return;
+    const result = await Swal.fire({
+      title: "ยืนยันการลบ",
+      text: "คุณต้องการลบสินค้านี้หรือไม่?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "ลบ",
+      cancelButtonText: "ยกเลิก"
+    });
+    if (!result.isConfirmed) return;
     
     setLoading(true);
     try {
       // ใช้ localStorage แทน redux
       await removeProduct(token, id);
-      alert("ลบสินค้าสำเร็จ");
+      Swal.fire({
+        title: "สำเร็จ",
+        text: "ลบสินค้าสำเร็จ",
+        icon: "success",
+        confirmButtonColor: "#3085d6"
+      });
+
       loadProducts(pagination.current, filters);
     } catch (error) {
       console.error("Failed to delete product:", error);
-      alert("ไม่สามารถลบสินค้าได้");
+      Swal.fire({
+        title: "เกิดข้อผิดพลาด",
+        text: error.response?.data?.message || "ไม่สามารถลบสินค้าได้",
+        icon: "error",
+        confirmButtonColor: "#3085d6"
+      });
     } finally {
       setLoading(false);
     }

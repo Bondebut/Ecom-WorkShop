@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createCategory } from "../../api/Category";
 import useEcomStore from "../../store/ecom-store";
 import useDataStore from "../../store/data-store";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2"; //  SweetAlert2
 import { FiPlus, FiTrash2, FiSearch } from "react-icons/fi"; // เพิ่ม FiSearch
 
 const FromCategory = () => {
@@ -21,47 +21,97 @@ const FromCategory = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name) {
-      return toast.warning("Please fill data");
+      return Swal.fire({
+        title: "แจ้งเตือน",
+        text: "กรุณากรอกชื่อหมวดหมู่",
+        icon: "warning",
+        confirmButtonColor: "#3085d6",
+      });
     }
     try {
       const res = await createCategory(token, { name });
       // Update store directly instead of refetching
       addCategory(res.data);
-      toast.success(`Add Category ${res.data.name} Success!`);
+
+      // แสดงการแจ้งเตือนด้วย SweetAlert2
+      Swal.fire({
+        title: "สำเร็จ",
+        text: `เพิ่มหมวดหมู่ ${res.data.name} เรียบร้อยแล้ว`,
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
       setName("");
     } catch (err) {
-      toast.error(err.response?.data?.message);
+      Swal.fire({
+        title: "เกิดข้อผิดพลาด",
+        text: err.response?.data?.message || "ไม่สามารถเพิ่มหมวดหมู่ได้",
+        icon: "error",
+        confirmButtonColor: "#3085d6",
+      });
     }
   };
 
   const handleRemove = async (id) => {
-    if (!confirm("Confirm Delete")) return;
+    const result = await Swal.fire({
+      title: "ยืนยันการลบ",
+      text: "คุณต้องการลบหมวดหมู่นี้หรือไม่?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "ลบ",
+      cancelButtonText: "ยกเลิก",
+    });
 
-    try {
-      // removeCategory already handles the optimistic UI update
-      const res = await removeCategory(token, id);
-      // Don't call removeCategory again here
-      toast.success(`Deleted ${res.data.category.name} success`);
-    } catch (err) {
-      // Error handling - UI already reverted in the store
-      const errMsg = err.response?.data?.message || "Failed to delete category";
-      toast.error(errMsg);
+    if (result.isConfirmed) {
+      try {
+        // removeCategory already handles the optimistic UI update
+        const res = await removeCategory(token, id);
+
+        // แสดงการแจ้งเตือนสำเร็จด้วย SweetAlert2
+        Swal.fire({
+          title: "ลบแล้ว",
+          text: `ลบหมวดหมู่ ${res.data.category.name} เรียบร้อยแล้ว`,
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } catch (err) {
+        // Error handling - UI already reverted in the store
+        const errMsg = err.response?.data?.message || "ไม่สามารถลบหมวดหมู่ได้";
+
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด",
+          text: errMsg,
+          icon: "error",
+          confirmButtonColor: "#3085d6",
+        });
+      }
     }
   };
 
   // กรองหมวดหมู่ตามคำค้นหา
-  const filteredCategories = categories.filter(cat => 
+  const filteredCategories = categories.filter((cat) =>
     cat.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="container mx-auto p-6 bg-white rounded-lg shadow-lg max-w-4xl">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Category Management</h1>
-      
+      <h1 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">
+        Category Management
+      </h1>
+
       {/* Form Section */}
       <div className="bg-gray-50 p-5 rounded-lg mb-6">
-        <h2 className="text-lg font-semibold text-gray-700 mb-3">Add New Category</h2>
-        <form className="flex flex-col sm:flex-row gap-3" onSubmit={handleSubmit}>
+        <h2 className="text-lg font-semibold text-gray-700 mb-3">
+          Add New Category
+        </h2>
+        <form
+          className="flex flex-col sm:flex-row gap-3"
+          onSubmit={handleSubmit}
+        >
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -69,7 +119,7 @@ const FromCategory = () => {
             placeholder="Enter category name"
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
-          <button 
+          <button
             type="submit"
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-200 flex items-center justify-center"
           >
@@ -77,7 +127,7 @@ const FromCategory = () => {
           </button>
         </form>
       </div>
-      
+
       {/* Search Section - เพิ่มส่วนค้นหา */}
       <div className="mb-6">
         <div className="relative">
@@ -93,42 +143,51 @@ const FromCategory = () => {
           />
         </div>
       </div>
-      
+
       {/* Categories List */}
       <div className="bg-white rounded-lg">
-        <h2 className="text-lg font-semibold text-gray-700 mb-3">Categories List</h2>
-        
+        <h2 className="text-lg font-semibold text-gray-700 mb-3">
+          Categories List
+        </h2>
+
         {filteredCategories.length === 0 ? (
           <p className="text-gray-500 italic p-4 text-center bg-gray-50 rounded-lg">
-            {searchTerm ? "No categories matching your search." : "No categories found. Add your first category above."}
+            {searchTerm
+              ? "No categories matching your search."
+              : "No categories found. Add your first category above."}
           </p>
         ) : (
           <ul className="divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
             {filteredCategories.map((item, index) => (
-              <li 
-                key={index} 
+              <li
+                key={index}
                 className="flex justify-between items-center p-4 hover:bg-gray-50 transition-colors duration-150"
               >
                 <span className="text-gray-800 font-medium">{item.name}</span>
-                <button
-                  onClick={() => handleRemove(item._id || item.id)}
-                  className="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-lg transition-colors duration-200 flex items-center"
-                >
-                  <FiTrash2 className="mr-1" /> Delete
-                </button>
+
+                {item.name !== "ไม่มีหมวดหมู่" && (
+                  <button
+                    onClick={() => handleRemove(item._id || item.id)}
+                    className="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-lg transition-colors duration-200 flex items-center"
+                  >
+                    <FiTrash2 className="mr-1" /> Delete
+                  </button>
+                )}
               </li>
             ))}
           </ul>
         )}
       </div>
-      
+
       {/* Stats Section */}
       <div className="mt-6 text-gray-600 text-sm flex justify-between">
         <span>
-          Showing: <span className="font-semibold">{filteredCategories.length}</span> of <span className="font-semibold">{categories.length}</span> categories
+          Showing:{" "}
+          <span className="font-semibold">{filteredCategories.length}</span> of{" "}
+          <span className="font-semibold">{categories.length}</span> categories
         </span>
         {searchTerm && (
-          <button 
+          <button
             onClick={() => setSearchTerm("")}
             className="text-blue-500 hover:text-blue-700"
           >
