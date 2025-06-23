@@ -12,7 +12,7 @@ exports.create = async (req, res) => {
     // ตรวจสอบว่ามีข้อมูลรูปภาพหรือไม่
     const processedImages = images.map((item) => ({
       asset_id: item.asset_id,
-      public_id: item.public_id || item.asset_id, // ใช้ asset_id เป็น public_id ถ้าไม่มี
+      public_id: item.public_id || item.asset_id, 
       url: item.url,
       secure_url: item.secure_url,
     }));
@@ -83,7 +83,7 @@ exports.list = async (req, res) => {
       where,
       skip,
       take: pageSize,
-      orderBy: { createdAt: "desc" }, // Fixed typo in createdAt
+      orderBy: { createdAt: "desc" },
       include: {
         category: true,
         images: true,
