@@ -18,6 +18,7 @@ import LayOutUser from '../layouts/LayOutUser'
 import HomeUser from '../pages/user/HomeUser'
 import ProtectRouteUser from '../routes/ProtectRouteUser'
 import ProtectRouteAdmin from './ProtectRouteAdmin'
+import DetailProduct from '../components/admin/Product/DetailProduct'
 
 
 const router = createBrowserRouter([
@@ -44,6 +45,7 @@ const router = createBrowserRouter([
       { index: true, element: <Dashboad /> },
       { path: 'category', element: <Category /> },
       { path: 'product', element: <Product /> },
+      { path: 'product/:id', element: <DetailProduct /> },
       { path: 'manage', element: <Manage /> },
     ]
   },

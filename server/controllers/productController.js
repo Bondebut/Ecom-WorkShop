@@ -12,11 +12,11 @@ exports.create = async (req, res) => {
     // ตรวจสอบว่ามีข้อมูลรูปภาพหรือไม่
     const processedImages = images.map((item) => ({
       asset_id: item.asset_id,
-      public_id: item.public_id || item.asset_id, 
+      public_id: item.public_id || item.asset_id,
       url: item.url,
       secure_url: item.secure_url,
     }));
-
+    
     const product = await prisma.product.create({
       data: {
         title: title,
@@ -132,13 +132,38 @@ exports.update = async (req, res) => {
     const { title, description, price, quantity, categoryId, images } =
       req.body;
     const pamid = req.params.id;
+    console.log("req.body", req.body);
 
     //clear image
+    const imagesOld = await prisma.image.findMany({
+      where: {
+        productId: Number(pamid),
+      },
+      select: {
+        public_id: true,
+      },
+    });
+
     await prisma.image.deleteMany({
       where: {
         productId: Number(pamid),
       },
     });
+
+    for (const image of imagesOld) {
+      if (image.public_id) {
+        try {
+          await cloudinary.uploader.destroy(image.public_id);
+          console.log(`Deleted image from Cloudinary: ${image.public_id}`);
+        } catch (cloudinaryError) {
+          console.log(
+            `Failed to delete image from Cloudinary: ${image.public_id}`,
+            cloudinaryError
+          );
+          // ไม่ต้อง throw error เพื่อให้ทำงานต่อได้แม้ลบไฟล์ใน Cloudinary ไม่สำเร็จ
+        }
+      }
+    }
 
     const product = await prisma.product.update({
       where: {

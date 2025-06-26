@@ -3,7 +3,7 @@ const { cloudinary } = require('../config/cloudinary');
 exports.uploadImages = async (req, res) => {
   try {
     const files = req.files;
-    
+    console.log("Uploaded files:", files);
     const images = files.map(file => ({
       asset_id: file.asset_id || file.filename,
       public_id: file.public_id || file.path.split('/').pop(), // ดึง public_id จากไฟล์
