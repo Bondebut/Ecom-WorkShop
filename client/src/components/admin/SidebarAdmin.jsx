@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { CircleGauge, LayoutDashboard } from 'lucide-react';
 
-const SidebarAdmin = () => {
+const SidebarAdmin = ({ isOpen }) => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -14,12 +14,14 @@ const SidebarAdmin = () => {
     };
 
     return (
-        <div className='bg-gray-700 w-64 text-gray-100 flex flex-col h-screen '>
-            <div className='h-24 bg-gray-900 flex items-center justify-center text-2xl font-bold'>
+        <div className={`bg-gray-700 text-gray-100 flex flex-col h-screen transition-all duration-300 ${
+            isOpen ? 'w-64' : 'w-0 overflow-hidden'
+        }`}>
+            <div className='h-24 bg-gray-900 flex items-center justify-center text-2xl font-bold min-w-64'>
                 Admin panel
             </div>
 
-            <nav className='flex-1 px-2 py-4 space-y-2'>
+            <nav className='flex-1 px-2 py-4 space-y-2 min-w-64'>
                 <NavLink to={'/admin'} end className={({isActive})=>
                 isActive 
                 ? 'bg-gray-800 px-4 py-2 text-white flex items-center gap-2 rounded' 
@@ -57,7 +59,7 @@ const SidebarAdmin = () => {
                 </NavLink>
             </nav>
 
-            <div>
+            <div className='min-w-64'>
                 <button
                     onClick={handleLogout}
                     className='text-gray-300 px-4 py-2 hover:bg-gray-600 flex gap-2 rounded hover:text-white w-full text-left'
