@@ -12,7 +12,7 @@ const LayOutAdmin = () => {
   }
 
   return (
-    <div className={`flex h-screen ${isSidebarOpen ? 'gap-2' : ''}`}>
+    <div className={`flex h-screen `}>
       <SidebarAdmin isOpen={isSidebarOpen} />
       <div className='flex-1 flex flex-col '>
         <HeaderAdmin onToggleSidebar={toggleSidebar} />

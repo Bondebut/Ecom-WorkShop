@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState , useEffect } from 'react'
 import { toast } from 'react-toastify';
 import useEcomStore from '../../store/ecom-store';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const Login = () => {
   const navigate = useNavigate()
   const actionLogin = useEcomStore((state)=>state.actionLogin)
+  const { user , token } = useEcomStore() 
 
   const [form, setForm] = useState({
     email: "",
@@ -15,6 +16,19 @@ const Login = () => {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  
+  // Check if user is already logged in
+  useEffect(() => {
+    if(user && token){
+      // Redirect based on user role
+      if(user.role === 'admin'){
+        navigate('/admin')
+      }else{
+        navigate('/user')
+      }
+    }
+  }, [user, token, navigate]);
 
   const handleOnchange = (e) => {
     setForm({
