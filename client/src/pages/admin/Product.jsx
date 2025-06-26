@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import AddProduct from "../../components/admin/Product/AddProduct";
 import ListProduct from "../../components/admin/Product/ListProduct";
-import DetailProduct from "../../components/admin/Product/DetailProduct";
 import { Plus } from "lucide-react";
 
 const Product = () => {

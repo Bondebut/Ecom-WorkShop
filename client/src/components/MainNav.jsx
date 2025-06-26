@@ -27,7 +27,7 @@ const MainNav = () => {
                         <Link to={'cart'} className='text-white hover:text-gray-300' >Cart</Link>
                     </div>
 
-                    <div className='flex items-center gap-4'>
+                    <div className='flex items-center gap-4 cursor-pointer'>
                         {user && token ? (
                             <>
                                 <span className='text-white' onClick={() => user.role === 'admin' ? navigate('/admin') : navigate('/user')}>

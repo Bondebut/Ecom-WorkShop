@@ -28,16 +28,12 @@ export const removeProduct = async (token,id) => {
     })
 }
 
-export const detailProduct = async (token,id) => {
+export const detailProduct = async (id) => {
   console.log("Fetching product details for ID:", id);
   if (!id) {
     throw new Error("Product ID is required");
   }
-  return await axios.get(`${import.meta.env.VITE_API_URL}/product/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
+  return await axios.get(`${import.meta.env.VITE_API_URL}/product/${id}`);
 };
 
 export const updateProduct = async (token, id, productData) => {

@@ -37,7 +37,7 @@ const DetailProduct = () => {
     try {
       setLoading(true);
       // console.log("Fetching product details for ID:", id);
-      const { data } = await detailProduct(token, id);
+      const { data } = await detailProduct(id);
 
       // Ensure data has all required properties with defaults
       const productWithDefaults = {
