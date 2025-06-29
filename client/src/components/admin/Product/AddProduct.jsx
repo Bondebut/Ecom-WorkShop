@@ -6,7 +6,7 @@ import useDataStore from "../../../store/data-store";
 import Swal from "sweetalert2";
 import "./Product.css";
 
-const AddProduct = () => {
+const AddProduct = ({ onClose, onProductCreated }) => {
   const [product, setProduct] = useState({
     title: "",
     description: "",
@@ -227,6 +227,11 @@ const AddProduct = () => {
       imagePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
       setImageFiles([]);
       setImagePreviewUrls([]);
+
+      // Call the callback to refresh product list and close dialog
+      if (onProductCreated) {
+        onProductCreated();
+      }
     } catch (error) {
       console.error("Error saving product:", error);
       Swal.fire({

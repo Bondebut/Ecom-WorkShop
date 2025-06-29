@@ -1,13 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import AddProduct from "../../components/admin/Product/AddProduct";
 import ListProduct from "../../components/admin/Product/ListProduct";
 import { Plus } from "lucide-react";
 
 const Product = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const listProductRef = useRef();
 
   const openDialog = () => setIsDialogOpen(true);
   const closeDialog = () => setIsDialogOpen(false);
+
+  const handleProductCreated = () => {
+    closeDialog();
+    // Refresh the product list
+    if (listProductRef.current) {
+      listProductRef.current.refreshProducts();
+    }
+  };
 
   return (
     <div className="container mx-auto p-6 bg-white rounded-lg shadow-lg max-w-4xl">
@@ -24,7 +33,7 @@ const Product = () => {
         </button>
       </div>
       <div className="">
-        <ListProduct />
+        <ListProduct ref={listProductRef} />
       </div>
       
 
@@ -42,7 +51,7 @@ const Product = () => {
               </button>
             </div>
             <div className="p-6">
-              <AddProduct onClose={closeDialog} />
+              <AddProduct onClose={closeDialog} onProductCreated={handleProductCreated} />
             </div>
           </div>
         </div>

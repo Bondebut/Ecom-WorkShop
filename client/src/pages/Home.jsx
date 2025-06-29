@@ -1,16 +1,14 @@
 //rafce
-import React from 'react'
+import React from "react";
 
 const Home = () => {
   return (
-    <div>    
+    <div>
       <h1 data-aos="fade-up" className="text-3xl font-bold underline">
-    Home Page
+        Home Page
+      </h1>
+    </div>
+  );
+};
 
-  </h1>
-  </div>
-    
-  )
-}
-
-export default Home
+export default Home;

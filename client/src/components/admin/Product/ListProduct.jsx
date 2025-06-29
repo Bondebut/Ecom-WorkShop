@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { listProduct, removeProduct } from "../../../api/Product";
 import { Link } from "react-router-dom";
 import useEcomStore from "../../../store/ecom-store";
@@ -17,7 +17,6 @@ import {
   Calendar,
 } from "lucide-react";
 
-// Simple loading components without external dependencies
 const LoadingSpinner = ({ text = "กำลังโหลด..." }) => (
   <div className="flex flex-col items-center justify-center p-8">
     <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-200 border-t-blue-600"></div>
@@ -36,7 +35,7 @@ const CardSkeleton = () => (
   </div>
 );
 
-const ListProduct = () => {
+const ListProduct = forwardRef((props, ref) => {
   // State
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -52,25 +51,32 @@ const ListProduct = () => {
   const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'table'
   const token = useEcomStore((state) => state.token);
 
+  // Expose refresh function to parent component
+  useImperativeHandle(ref, () => ({
+    refreshProducts: () => {
+      loadProducts(pagination.current, filters);
+    }
+  }));
+
   // Load products
   const loadProducts = async (page = 1, filters = {}) => {
     setLoading(true);
     try {
-      const params = {
+      const dataInput = {
         page,
         pageSize: pagination.pageSize,
         title: filters.title,
       };
 
       if (filters.priceRange[0] !== null) {
-        params.minPrice = filters.priceRange[0];
+        dataInput.minPrice = filters.priceRange[0];
       }
 
       if (filters.priceRange[1] !== null) {
-        params.maxPrice = filters.priceRange[1];
+        dataInput.maxPrice = filters.priceRange[1];
       }
-
-      const response = await listProduct(params);
+      console.log("Loading products with dataInput:", dataInput);
+      const response = await listProduct(dataInput);
 
       setProducts(response.data.data);
       setPagination({
@@ -680,6 +686,6 @@ const ListProduct = () => {
       )}
     </div>
   );
-};
+});
 
 export default ListProduct;
